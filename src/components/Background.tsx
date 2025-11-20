@@ -8,8 +8,6 @@ interface BackgroundProps {
 export const Background: React.FC<BackgroundProps> = ({ isDark }) => {
     return (
         <>
-
-            {/* Animated Background Layer */}
             <div className="liquid-bg">
                 {isDark ? (
                     <>

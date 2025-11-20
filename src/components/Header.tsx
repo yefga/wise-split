@@ -21,32 +21,26 @@ export const Header: React.FC<HeaderProps> = ({
     totalSpent,
     hasExpenses
 }) => {
-    // Local state for the modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [pendingCurrency, setPendingCurrency] = useState<string | null>(null);
 
-    // 1. Handle Dropdown Change
     const handleCurrencySelect = (e: ChangeEvent<HTMLSelectElement>) => {
         const selectedCode = e.target.value;
 
-        // If selection is the same, do nothing
         if (selectedCode === currency) return;
 
-        // If no expenses, change immediately without confirmation
         if (!hasExpenses) {
             setCurrency(selectedCode);
             return;
         }
 
-        // Store the user's choice and open modal
         setPendingCurrency(selectedCode);
         setIsModalOpen(true);
     };
 
-    // 2. Handle "Yes, Reset"
     const confirmChange = () => {
         if (pendingCurrency) {
-            setCurrency(pendingCurrency); // Update Global Store
+            setCurrency(pendingCurrency);
         }
         closeModal();
     };
