@@ -8,3 +8,4 @@ export { PeopleSection } from './PeopleSection';
 export { AddExpense } from './AddExpense';
 export { Header } from './Header';
 export { Footer } from './Footer';
+export { HistoryReports } from './HistoryReports';
