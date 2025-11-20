@@ -33,9 +33,11 @@ export const Footer: React.FC<FooterProps> = ({ isDark, theme, toggleTheme, onRe
             <footer className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mt-3 items-center relative z-20">
 
                 <div className="md:col-span-5">
-                    <p className={`text-xs font-medium opacity-50 ${isDark ? 'text-white' : 'text-slate-600'} mix-blend-difference transition-colors duration-500`}>
-                        {COPYRIGHT_TEXT}
-                    </p>
+                    <a href="https://github.com/yefga/split-wise" target="_blank" rel="noopener noreferrer">
+                        <p className={`text-xs font-medium opacity-50 ${isDark ? 'text-white' : 'text-slate-600'} mix-blend-difference transition-colors duration-500`}>
+                            {COPYRIGHT_TEXT}
+                        </p>
+                    </a>
                 </div>
 
                 <div className="md:col-span-7 flex justify-end gap-3">
