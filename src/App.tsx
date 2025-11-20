@@ -1,12 +1,21 @@
-import React, { useState, useMemo, FormEvent } from 'react';
+import React, { useState, useMemo, FormEvent, useEffect } from 'react';
 import { useAppStore } from '@store';
 import { ThemeConfig, PersonSummary, Settlement, Currency, Expense } from '@app-types';
 import { Background, PeopleSection, AddExpense, Header, Footer, HistoryReports } from '@components';
 import { CURRENCIES, EVERYONE_OPTION, ERROR_NAME_TAKEN, CONFIRM_RESET } from '@constants';
 import { getTheme } from '@utils';
+import {
+  trackAppOpened,
+  trackSessionStart,
+  trackPersonAdded,
+  trackPersonRemoved,
+  trackExpenseAdded,
+  trackDataReset,
+  trackSettlementCopied,
+  trackError
+} from './google';
 
 export default function App() {
-  // --- Store Hooks ---
   const {
     isDark, toggleTheme,
     people, addPerson: addPersonToStore, removePerson: removePersonFromStore,
@@ -16,7 +25,6 @@ export default function App() {
     resetApp: resetStore
   } = useAppStore();
 
-  // --- Local Form State ---
   const [personName, setPersonName] = useState<string>('');
   const [nameError, setNameError] = useState<string>('');
 
@@ -26,13 +34,26 @@ export default function App() {
   const [orderedBy, setOrderedBy] = useState<string>('');
 
   const [copiedId, setCopiedId] = useState<number | null>(null);
-
-  // --- Theme ---
   const theme: ThemeConfig = getTheme(isDark);
+
+  // --- Analytics: Track App Initialization ---
+  useEffect(() => {
+    console.log(currency)
+    trackAppOpened();
+    trackSessionStart({
+      peopleCount: people.length,
+      expenseCount: expenses.length,
+      currency,
+      theme: isDark ? 'dark' : 'light',
+    });
+  }, []);
 
   // --- Handlers ---
   const handleReset = () => {
     if (window.confirm(CONFIRM_RESET)) {
+      // Track before resetting
+      trackDataReset(people.length, expenses.length);
+
       resetStore();
       setPersonName('');
       setDescription('');
@@ -52,7 +73,12 @@ export default function App() {
       document.execCommand("copy");
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
-    } catch (err) { console.error('Failed', err); }
+
+      trackSettlementCopied(id);
+    } catch (err) {
+      console.error('Failed', err);
+      trackError('Copy failed', 'handleCopy');
+    }
     document.body.removeChild(textArea);
   };
 
@@ -64,9 +90,13 @@ export default function App() {
     const success = addPersonToStore(name);
     if (!success) {
       setNameError(`"${name}" ${ERROR_NAME_TAKEN}`);
+      trackError(`Person name already exists: ${name}`, 'handleAddPerson');
     } else {
       setPersonName('');
       setNameError('');
+
+      // Track person added with updated count
+      trackPersonAdded(name, people.length + 1);
     }
   };
 
@@ -74,6 +104,9 @@ export default function App() {
     removePersonFromStore(name);
     if (payer === name) setPayer('');
     if (orderedBy === name) setOrderedBy('');
+
+    // Track person removed with updated count
+    trackPersonRemoved(name, people.length - 1);
   };
 
   const handleAddExpense = (e: FormEvent) => {
@@ -96,13 +129,22 @@ export default function App() {
     };
 
     addExpenseToStore(newExpense);
+
+    // Track expense added
+    trackExpenseAdded({
+      amount: numAmount,
+      payer,
+      orderedBy,
+      involved,
+      currency,
+    });
+
     setDescription('');
     setAmount('');
     setPayer('');
     setOrderedBy('');
   };
 
-  // --- Calculations ---
   const personSummary = useMemo<Record<string, PersonSummary>>(() => {
     const summary: Record<string, PersonSummary> = {};
     people.forEach(p => { summary[p] = { paid: 0, share: 0, balance: 0 }; });
@@ -171,7 +213,6 @@ export default function App() {
 
         <main className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mb-4">
 
-          {/* Left Column */}
           <div className="md:col-span-5 flex flex-col gap-8">
             <PeopleSection
               theme={theme}
@@ -218,7 +259,6 @@ export default function App() {
           </div>
         </main>
 
-        {/* New Footer with Controls */}
         <Footer
           isDark={isDark}
           theme={theme}

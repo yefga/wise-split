@@ -42,4 +42,7 @@ export interface ThemeConfig {
 export interface Currency {
     label: string;
     symbol: string;
+    flag: string;
+    code: string;
+    locale: string;
 }

@@ -1,28 +1,26 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Expense } from '@app-types';
-import { DEFAULT_CURRENCY, DEFAULT_TAB, STORAGE_KEY } from '@constants';
+import { DEFAULT_TAB, DEFAULT_CURRENCY, STORAGE_KEY } from '@constants';
+import { CURRENCIES } from '@constants';
 
 interface AppState {
-    // Theme
     isDark: boolean;
     toggleTheme: () => void;
-
-    // Global Data
     people: string[];
     expenses: Expense[];
     currency: string;
     activeTab: 'expenses' | 'report';
-
-    // Actions
-    setCurrency: (symbol: string) => void;
+    setCurrency: (code: string) => void;
     setActiveTab: (tab: 'expenses' | 'report') => void;
-    addPerson: (name: string) => boolean; // returns success status
+    addPerson: (name: string) => boolean;
     removePerson: (name: string) => void;
     addExpense: (expense: Expense) => void;
     deleteExpense: (id: number) => void;
     resetApp: () => void;
 }
+
+const currency = CURRENCIES.find(currency => currency.code === DEFAULT_CURRENCY)?.symbol ?? DEFAULT_CURRENCY
 
 export const useAppStore = create<AppState>()(
     persist(
@@ -32,10 +30,14 @@ export const useAppStore = create<AppState>()(
 
             people: [],
             expenses: [],
-            currency: DEFAULT_CURRENCY,
+            currency: currency,
             activeTab: DEFAULT_TAB,
 
-            setCurrency: (currency) => set({ currency }),
+            setCurrency: (code: string) => set({
+                currency: code,
+                expenses: [],
+                people: []
+            }),
             setActiveTab: (activeTab) => set({ activeTab }),
 
             addPerson: (name) => {
@@ -51,7 +53,6 @@ export const useAppStore = create<AppState>()(
             removePerson: (name) =>
                 set((state) => ({
                     people: state.people.filter((p) => p !== name),
-                    // Optional: We could cascade delete expenses involving this person here if desired
                 })),
 
             addExpense: (expense) =>
@@ -65,7 +66,6 @@ export const useAppStore = create<AppState>()(
                     people: [],
                     expenses: [],
                     activeTab: DEFAULT_TAB,
-                    // We keep theme and currency as they are user preferences usually
                 }),
         }),
         {

@@ -5,7 +5,7 @@ export const APP_NAME = 'WiseSplit';
 export const APP_CREATOR = 'Yefga';
 
 // Default Values
-export const DEFAULT_CURRENCY = '$';
+export const DEFAULT_CURRENCY = 'IDR';
 export const DEFAULT_TAB = 'expenses' as const;
 export const EVERYONE_OPTION = 'Everyone';
 export const STORAGE_KEY = 'smart-split-storage';
@@ -17,6 +17,13 @@ export const SECTION_ACTIVITY = 'Activity';
 export const SECTION_SETTLEMENT = 'Settlement';
 export const SECTION_NET_BALANCES = 'Net Balances';
 export const SECTION_SETTLEMENT_PLAN = 'Settlement Plan';
+
+// Confirm Modal Messages
+export const CONFIRM_CHANGE_CURRENCY = 'Change Currency?';
+export const CONFIRM_RESET = 'Reset everything?';
+export const CONFIRM_RESET_MESSAGE = 'Changing the currency will permanently delete all current expenses and reset the app. This action cannot be undone.';
+export const CONFIRM_RESET_BUTTON = 'Reset & Change';
+export const CONFIRM_CANCEL_BUTTON = 'Cancel';
 
 // Button Labels
 export const BTN_ADD = 'Add';
@@ -48,9 +55,6 @@ export const MSG_SETTLED_UP = 'Settled up!';
 
 // Validation Messages
 export const ERROR_NAME_TAKEN = 'is taken. Please add more identity.';
-
-// Confirmation Messages
-export const CONFIRM_RESET = 'Reset everything?';
 
 // Expense Labels
 export const LABEL_PAID = ' paid ';
