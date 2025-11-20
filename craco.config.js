@@ -8,6 +8,7 @@ module.exports = {
             '@app-types': path.resolve(__dirname, 'src/types'),
             '@constants': path.resolve(__dirname, 'src/constants'),
             '@utils': path.resolve(__dirname, 'src/utils'),
+            '@google': path.resolve(__dirname, 'src/google'),
         },
     },
 };

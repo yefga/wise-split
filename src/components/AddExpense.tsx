@@ -1,26 +1,19 @@
-import React, { FormEvent, RefObject } from 'react';
+import React, { FormEvent, RefObject, useState } from 'react';
 import { Receipt, AlertCircle } from 'lucide-react';
-import { ThemeConfig } from '@app-types';
+import { ThemeConfig, Expense } from '@app-types';
 import { GlassCard, GlassInput, GlassSelect, GlassButton } from '@components';
 import {
     SECTION_ADD_EXPENSE, LABEL_DESCRIPTION, LABEL_AMOUNT, LABEL_ORDERED_BY, LABEL_PAID_BY,
     PLACEHOLDER_DESCRIPTION, PLACEHOLDER_AMOUNT, PLACEHOLDER_SELECT, EVERYONE_OPTION,
     BTN_ADD_EXPENSE, MSG_ADD_PEOPLE_FIRST
 } from '@constants';
+import { trackExpenseAdded } from '@google';
 
 interface AddExpenseProps {
     theme: ThemeConfig;
     people: string[];
     currency: string;
-    description: string;
-    setDescription: (value: string) => void;
-    amount: string;
-    setAmount: (value: string) => void;
-    payer: string;
-    setPayer: (value: string) => void;
-    orderedBy: string;
-    setOrderedBy: (value: string) => void;
-    handleAddExpense: (e: FormEvent) => void;
+    addExpenseToStore: (expense: Expense) => void;
     cardRef?: RefObject<HTMLDivElement | null>;
 }
 
@@ -28,17 +21,50 @@ export const AddExpense: React.FC<AddExpenseProps> = ({
     theme,
     people,
     currency,
-    description,
-    setDescription,
-    amount,
-    setAmount,
-    payer,
-    setPayer,
-    orderedBy,
-    setOrderedBy,
-    handleAddExpense,
+    addExpenseToStore,
     cardRef
 }) => {
+    const [description, setDescription] = useState<string>('');
+    const [amount, setAmount] = useState<string>('');
+    const [payer, setPayer] = useState<string>('');
+    const [orderedBy, setOrderedBy] = useState<string>('');
+
+    const handleAddExpense = (e: FormEvent) => {
+        e.preventDefault();
+        if (!description || !amount || !payer || !orderedBy) return;
+
+        const numAmount = parseFloat(amount);
+        if (isNaN(numAmount) || numAmount <= 0) return;
+
+        const involved = orderedBy === EVERYONE_OPTION ? [...people] : [orderedBy];
+
+        const newExpense: Expense = {
+            id: Date.now(),
+            description,
+            amount: numAmount,
+            payer,
+            orderedBy,
+            involved,
+            date: new Date().toLocaleDateString()
+        };
+
+        addExpenseToStore(newExpense);
+
+        // Track expense added
+        trackExpenseAdded({
+            amount: numAmount,
+            payer,
+            orderedBy,
+            involved,
+            currency,
+        });
+
+        setDescription('');
+        setAmount('');
+        setPayer('');
+        setOrderedBy('');
+    };
+
     return (
         <GlassCard theme={theme} cardRef={cardRef} className="h-full">
             <div className="flex items-center gap-3 mb-6">

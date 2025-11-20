@@ -51,7 +51,13 @@
       ],
       "@utils": [
         "utils"
-      ]
+      ],
+      "@google/*": [
+        "google/*"
+      ],
+      "@google": [
+        "google"
+      ],
     }
   },
   "include": [

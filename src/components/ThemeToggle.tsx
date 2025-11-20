@@ -1,7 +1,7 @@
 import React from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { ThemeConfig } from '@app-types';
-import { GlassButton } from './GlassButton';
+import { GlassButton } from './views/GlassButton';
 
 interface ThemeToggleProps {
     theme: ThemeConfig;

@@ -1,4 +1,4 @@
-import React, { CSSProperties } from 'react';
+import React, { CSSProperties, useState, useMemo } from 'react';
 import { Receipt, Trash2, Wallet, Activity, ArrowRight, Check, Copy } from 'lucide-react';
 import { ThemeConfig, Expense, PersonSummary, Settlement } from '@app-types';
 import { GlassCard } from '@components';
@@ -8,6 +8,7 @@ import {
     MSG_ADD_EXPENSES, MSG_SETTLED_UP, LABEL_PAID, LABEL_TO_PREFIX, LABEL_HIMSELF,
     LABEL_PAY_TO, LABEL_FOR
 } from '@constants';
+import { trackError } from '@google';
 
 interface HistoryReportsProps {
     theme: ThemeConfig;
@@ -17,10 +18,6 @@ interface HistoryReportsProps {
     currency: string;
     deleteExpense: (id: number) => void;
     people: string[];
-    personSummary: Record<string, PersonSummary>;
-    settlements: Settlement[];
-    handleCopy: (text: string, id: number) => void;
-    copiedId: number | null;
     cardStyle?: CSSProperties;
 }
 
@@ -32,12 +29,75 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
     currency,
     deleteExpense,
     people,
-    personSummary,
-    settlements,
-    handleCopy,
-    copiedId,
     cardStyle
 }) => {
+    const [copiedId, setCopiedId] = useState<number | null>(null);
+
+    const personSummary = useMemo<Record<string, PersonSummary>>(() => {
+        const summary: Record<string, PersonSummary> = {};
+        people.forEach(p => { summary[p] = { paid: 0, share: 0, balance: 0 }; });
+        expenses.forEach(exp => {
+            const { payer, amount, involved } = exp;
+            if (summary[payer]) { summary[payer].paid += amount; }
+            if (involved.length > 0) {
+                const split = amount / involved.length;
+                involved.forEach(p => { if (summary[p]) summary[p].share += split; });
+            }
+        });
+        Object.keys(summary).forEach(p => { summary[p].balance = summary[p].paid - summary[p].share; });
+        return summary;
+    }, [expenses, people]);
+
+    const settlements = useMemo<Settlement[]>(() => {
+        if (people.length < 2 || expenses.length === 0) return [];
+        const balances: Record<string, number> = {};
+        people.forEach(p => balances[p] = 0);
+        expenses.forEach(exp => {
+            const { payer, amount, involved } = exp;
+            if (involved.length > 0) {
+                if (balances[payer] !== undefined) balances[payer] += amount;
+                const share = amount / involved.length;
+                involved.forEach(p => { if (balances[p] !== undefined) balances[p] -= share; });
+            }
+        });
+        let debtors: { person: string, amount: number }[] = [];
+        let creditors: { person: string, amount: number }[] = [];
+        Object.keys(balances).forEach(p => {
+            if (balances[p] < -0.01) debtors.push({ person: p, amount: balances[p] });
+            if (balances[p] > 0.01) creditors.push({ person: p, amount: balances[p] });
+        });
+        debtors.sort((a, b) => a.amount - b.amount);
+        creditors.sort((a, b) => b.amount - a.amount);
+        const results: Settlement[] = [];
+        let i = 0; let j = 0;
+        while (i < debtors.length && j < creditors.length) {
+            const amt = Math.min(Math.abs(debtors[i].amount), creditors[j].amount);
+            results.push({ from: debtors[i].person, to: creditors[j].person, amount: amt });
+            debtors[i].amount += amt;
+            creditors[j].amount -= amt;
+            if (Math.abs(debtors[i].amount) < 0.01) i++;
+            if (creditors[j].amount < 0.01) j++;
+        }
+        return results;
+    }, [expenses, people]);
+
+    const handleCopy = (text: string, id: number) => {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        try {
+            document.execCommand("copy");
+            setCopiedId(id);
+            setTimeout(() => setCopiedId(null), 2000);
+
+        } catch (err) {
+            console.error('Failed', err);
+            trackError('Copy failed', 'handleCopy');
+        }
+        document.body.removeChild(textArea);
+    };
+
     return (
         <GlassCard theme={theme} style={cardStyle} className="flex flex-col !p-0 overflow-hidden">
             {/* Tabs Header */}

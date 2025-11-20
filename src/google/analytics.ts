@@ -7,25 +7,13 @@ export const AnalyticsEvents = {
     APP_OPENED: 'app_opened',
     SESSION_START: 'session_start',
 
-    // Theme & Settings
-    THEME_CHANGED: 'theme_changed',
     CURRENCY_CHANGED: 'currency_changed',
-
-    // People Management
-    PERSON_ADDED: 'person_added',
-    PERSON_REMOVED: 'person_removed',
 
     // Expense Management
     EXPENSE_ADDED: 'expense_added',
-    EXPENSE_DELETED: 'expense_deleted',
-    EXPENSE_VIEWED: 'expense_viewed',
-
-    // Navigation
-    TAB_CHANGED: 'tab_changed',
 
     // Actions
     DATA_RESET: 'data_reset',
-    SETTLEMENT_COPIED: 'settlement_copied',
 
     // Engagement
     PAGE_VIEW: 'page_view',
@@ -63,26 +51,6 @@ export const trackPageView = (pageName: string, pageTitle?: string) => {
 };
 
 /**
- * Track when a person is added
- */
-export const trackPersonAdded = (personName: string, totalPeople: number) => {
-    trackEvent(AnalyticsEvents.PERSON_ADDED, {
-        person_name: personName,
-        total_people: totalPeople,
-    });
-};
-
-/**
- * Track when a person is removed
- */
-export const trackPersonRemoved = (personName: string, totalPeople: number) => {
-    trackEvent(AnalyticsEvents.PERSON_REMOVED, {
-        person_name: personName,
-        total_people: totalPeople,
-    });
-};
-
-/**
  * Track when an expense is added
  */
 export const trackExpenseAdded = (expense: {
@@ -103,39 +71,11 @@ export const trackExpenseAdded = (expense: {
 };
 
 /**
- * Track when an expense is deleted
- */
-export const trackExpenseDeleted = (expenseId: number, totalExpenses: number) => {
-    trackEvent(AnalyticsEvents.EXPENSE_DELETED, {
-        expense_id: expenseId,
-        total_expenses: totalExpenses,
-    });
-};
-
-/**
- * Track theme changes
- */
-export const trackThemeChanged = (isDark: boolean) => {
-    trackEvent(AnalyticsEvents.THEME_CHANGED, {
-        theme: isDark ? 'dark' : 'light',
-    });
-};
-
-/**
  * Track currency changes
  */
 export const trackCurrencyChanged = (currency: string) => {
     trackEvent(AnalyticsEvents.CURRENCY_CHANGED, {
         currency,
-    });
-};
-
-/**
- * Track tab navigation
- */
-export const trackTabChanged = (tabName: string) => {
-    trackEvent(AnalyticsEvents.TAB_CHANGED, {
-        tab_name: tabName,
     });
 };
 
@@ -146,15 +86,6 @@ export const trackDataReset = (peopleCount: number, expenseCount: number) => {
     trackEvent(AnalyticsEvents.DATA_RESET, {
         people_count: peopleCount,
         expense_count: expenseCount,
-    });
-};
-
-/**
- * Track when a settlement is copied
- */
-export const trackSettlementCopied = (settlementId: number) => {
-    trackEvent(AnalyticsEvents.SETTLEMENT_COPIED, {
-        settlement_id: settlementId,
     });
 };
 

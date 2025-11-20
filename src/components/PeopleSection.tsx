@@ -1,30 +1,50 @@
-import React, { FormEvent } from 'react';
+import React, { FormEvent, useState } from 'react';
 import { Users, Plus, Trash2 } from 'lucide-react';
 import { ThemeConfig } from '@app-types';
 import { GlassCard, GlassInput, GlassButton } from '@components';
-import { SECTION_PEOPLE, PLACEHOLDER_NAME, BTN_ADD, MSG_NO_PEOPLE } from '@constants';
+import { SECTION_PEOPLE, PLACEHOLDER_NAME, BTN_ADD, MSG_NO_PEOPLE, ERROR_NAME_TAKEN } from '@constants';
+import { trackError } from '@google';
 
 interface PeopleSectionProps {
     theme: ThemeConfig;
     people: string[];
-    personName: string;
-    nameError: string;
-    setPersonName: (name: string) => void;
-    setNameError: (error: string) => void;
-    handleAddPerson: (e: FormEvent) => void;
-    handleRemovePerson: (name: string) => void;
+    addPersonToStore: (name: string) => boolean;
+    removePersonFromStore: (name: string) => void;
+    onPersonRemoved?: (name: string) => void;
 }
 
 export const PeopleSection: React.FC<PeopleSectionProps> = ({
     theme,
     people,
-    personName,
-    nameError,
-    setPersonName,
-    setNameError,
-    handleAddPerson,
-    handleRemovePerson
+    addPersonToStore,
+    removePersonFromStore,
+    onPersonRemoved
 }) => {
+    const [personName, setPersonName] = useState<string>('');
+    const [nameError, setNameError] = useState<string>('');
+
+    const handleAddPerson = (e: FormEvent) => {
+        e.preventDefault();
+        const name = personName.trim();
+        if (!name) return;
+
+        const success = addPersonToStore(name);
+        if (!success) {
+            setNameError(`"${name}" ${ERROR_NAME_TAKEN}`);
+            trackError(`Person name already exists: ${name}`, 'handleAddPerson');
+        } else {
+            setPersonName('');
+            setNameError('');
+        }
+    };
+
+    const handleRemovePerson = (name: string) => {
+        removePersonFromStore(name);
+        if (onPersonRemoved) {
+            onPersonRemoved(name);
+        }
+    };
+
     return (
         <section className="w-full">
             <GlassCard theme={theme}>

@@ -2,7 +2,6 @@ import React, { ChangeEvent, useState } from 'react';
 import { ThemeConfig, Currency } from '@app-types';
 import { GlassCard } from '@components';
 import { APP_NAME, LABEL_CURRENCY, LABEL_TOTAL, CONFIRM_RESET_MESSAGE, CONFIRM_CHANGE_CURRENCY } from '@constants';
-// Import the new modal
 import { ConfirmModal } from './ConfirmModal';
 
 interface HeaderProps {
@@ -11,6 +10,7 @@ interface HeaderProps {
     setCurrency: (value: string) => void;
     currencies: Currency[];
     totalSpent: number;
+    hasExpenses: boolean;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -18,7 +18,8 @@ export const Header: React.FC<HeaderProps> = ({
     currency,
     setCurrency,
     currencies,
-    totalSpent
+    totalSpent,
+    hasExpenses
 }) => {
     // Local state for the modal
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +31,12 @@ export const Header: React.FC<HeaderProps> = ({
 
         // If selection is the same, do nothing
         if (selectedCode === currency) return;
+
+        // If no expenses, change immediately without confirmation
+        if (!hasExpenses) {
+            setCurrency(selectedCode);
+            return;
+        }
 
         // Store the user's choice and open modal
         setPendingCurrency(selectedCode);
@@ -44,13 +51,11 @@ export const Header: React.FC<HeaderProps> = ({
         closeModal();
     };
 
-    // 3. Handle "Cancel"
     const closeModal = () => {
         setIsModalOpen(false);
         setPendingCurrency(null);
     };
 
-    // Get full object for display
     const activeCurrency = currencies.find(c => c.code === currency) || currencies[0];
 
     return (

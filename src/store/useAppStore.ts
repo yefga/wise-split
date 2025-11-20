@@ -35,8 +35,7 @@ export const useAppStore = create<AppState>()(
 
             setCurrency: (code: string) => set({
                 currency: code,
-                expenses: [],
-                people: []
+                expenses: []
             }),
             setActiveTab: (activeTab) => set({ activeTab }),
 
