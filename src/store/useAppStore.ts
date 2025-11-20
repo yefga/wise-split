@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Expense } from '@app-types';
+import { DEFAULT_CURRENCY, DEFAULT_TAB, STORAGE_KEY } from '@constants';
 
 interface AppState {
     // Theme
@@ -31,8 +32,8 @@ export const useAppStore = create<AppState>()(
 
             people: [],
             expenses: [],
-            currency: '$',
-            activeTab: 'expenses',
+            currency: DEFAULT_CURRENCY,
+            activeTab: DEFAULT_TAB,
 
             setCurrency: (currency) => set({ currency }),
             setActiveTab: (activeTab) => set({ activeTab }),
@@ -63,12 +64,12 @@ export const useAppStore = create<AppState>()(
                 set({
                     people: [],
                     expenses: [],
-                    activeTab: 'expenses',
+                    activeTab: DEFAULT_TAB,
                     // We keep theme and currency as they are user preferences usually
                 }),
         }),
         {
-            name: 'smart-split-storage',
+            name: STORAGE_KEY,
             partialize: (state) => ({
                 isDark: state.isDark,
                 people: state.people,

@@ -1,9 +1,8 @@
 import React, { useState, useMemo, FormEvent } from 'react';
 import { useAppStore } from '@store';
 import { ThemeConfig, PersonSummary, Settlement, Currency, Expense } from '@app-types';
-// Removed ThemeToggle, GlassButton from imports here as they are now in Footer (unless used elsewhere)
 import { Background, PeopleSection, AddExpense, Header, Footer, HistoryReports } from '@components';
-import { CURRENCIES } from '@constants';
+import { CURRENCIES, EVERYONE_OPTION, ERROR_NAME_TAKEN, CONFIRM_RESET } from '@constants';
 import { getTheme } from '@utils';
 
 export default function App() {
@@ -33,7 +32,7 @@ export default function App() {
 
   // --- Handlers ---
   const handleReset = () => {
-    if (window.confirm('Reset everything?')) {
+    if (window.confirm(CONFIRM_RESET)) {
       resetStore();
       setPersonName('');
       setDescription('');
@@ -64,7 +63,7 @@ export default function App() {
 
     const success = addPersonToStore(name);
     if (!success) {
-      setNameError(`"${name}" is taken. Please add more identity.`);
+      setNameError(`"${name}" ${ERROR_NAME_TAKEN}`);
     } else {
       setPersonName('');
       setNameError('');
@@ -84,7 +83,7 @@ export default function App() {
     const numAmount = parseFloat(amount);
     if (isNaN(numAmount) || numAmount <= 0) return;
 
-    const involved = orderedBy === 'Everyone' ? [...people] : [orderedBy];
+    const involved = orderedBy === EVERYONE_OPTION ? [...people] : [orderedBy];
 
     const newExpense: Expense = {
       id: Date.now(),

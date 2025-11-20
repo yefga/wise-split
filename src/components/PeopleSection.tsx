@@ -2,6 +2,7 @@ import React, { FormEvent } from 'react';
 import { Users, Plus, Trash2 } from 'lucide-react';
 import { ThemeConfig } from '@app-types';
 import { GlassCard, GlassInput, GlassButton } from '@components';
+import { SECTION_PEOPLE, PLACEHOLDER_NAME, BTN_ADD, MSG_NO_PEOPLE } from '@constants';
 
 interface PeopleSectionProps {
     theme: ThemeConfig;
@@ -31,7 +32,7 @@ export const PeopleSection: React.FC<PeopleSectionProps> = ({
                     <div className={`p-2 rounded-xl ${theme.input}`}>
                         <Users className={`w-5 h-5 ${theme.accent}`} />
                     </div>
-                    <h2 className="text-lg font-bold">People</h2>
+                    <h2 className="text-lg font-bold">{SECTION_PEOPLE}</h2>
                 </div>
 
                 <div className="mb-6">
@@ -44,11 +45,11 @@ export const PeopleSection: React.FC<PeopleSectionProps> = ({
                                 setPersonName(e.target.value);
                                 if (nameError) setNameError('');
                             }}
-                            placeholder="Enter Name..."
+                            placeholder={PLACEHOLDER_NAME}
                             className="flex-1"
                         />
                         <GlassButton theme={theme} primary type="submit" disabled={!personName.trim()}>
-                            <Plus className="w-5 h-5" /> Add
+                            <Plus className="w-5 h-5" /> {BTN_ADD}
                         </GlassButton>
                     </form>
                     {nameError && (
@@ -57,7 +58,7 @@ export const PeopleSection: React.FC<PeopleSectionProps> = ({
                 </div>
 
                 <div className="flex flex-wrap gap-3">
-                    {people.length === 0 && <p className={`text-sm italic w-full text-center py-4 ${theme.textMuted}`}>Add friends to start splitting</p>}
+                    {people.length === 0 && <p className={`text-sm italic w-full text-center py-4 ${theme.textMuted}`}>{MSG_NO_PEOPLE}</p>}
                     {people.map((p) => (
                         <div key={p} className={`animate-pop group flex items-center gap-2 pl-4 pr-2 py-1.5 rounded-full text-sm font-medium transition-all ${theme.input} border ${theme.border}`}>
                             {p}

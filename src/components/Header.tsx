@@ -1,7 +1,7 @@
 import React, { ChangeEvent } from 'react';
-import { Activity } from 'lucide-react';
 import { ThemeConfig, Currency } from '@app-types';
 import { GlassCard } from '@components';
+import { APP_NAME, LABEL_CURRENCY, LABEL_TOTAL } from '@constants';
 
 interface HeaderProps {
     theme: ThemeConfig;
@@ -22,15 +22,12 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="px-6 py-6 sticky top-0 z-50">
             <GlassCard theme={theme} className="max-w-5xl mx-auto !py-4 !px-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 !rounded-full backdrop-blur-2xl">
                 <h1 className={`text-xl font-bold flex items-center gap-3 ${theme.textHighlight} tracking-wide`}>
-                    <div className={`p-2 rounded-full ${theme.input} border ${theme.border}`}>
-                        <Activity className="w-5 h-5" />
-                    </div>
-                    SmartSplit
+                    {APP_NAME}
                 </h1>
 
                 <div className="flex items-center gap-4">
                     <div className={`flex items-center gap-2 px-3 py-1.5 rounded-full ${theme.input} border ${theme.border}`}>
-                        <span className="text-xs uppercase font-bold tracking-wider opacity-60">Currency</span>
+                        <span className="text-xs uppercase font-bold tracking-wider opacity-60">{LABEL_CURRENCY}</span>
                         <select
                             value={currency}
                             onChange={(e: ChangeEvent<HTMLSelectElement>) => setCurrency(e.target.value)}
@@ -43,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
                     </div>
 
                     <div className={`hidden sm:block px-4 py-1.5 rounded-full font-bold ${theme.input} border ${theme.border} ${theme.textHighlight}`}>
-                        Total: {currency}{totalSpent.toFixed(2)}
+                        {LABEL_TOTAL}: {currency}{totalSpent.toFixed(2)}
                     </div>
                 </div>
             </GlassCard>

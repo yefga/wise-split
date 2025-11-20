@@ -2,6 +2,12 @@ import React, { CSSProperties } from 'react';
 import { Receipt, Trash2, Wallet, Activity, ArrowRight, Check, Copy } from 'lucide-react';
 import { ThemeConfig, Expense, PersonSummary, Settlement } from '@app-types';
 import { GlassCard } from '@components';
+import {
+    SECTION_ACTIVITY, SECTION_SETTLEMENT, BTN_HISTORY, BTN_PLAN,
+    MSG_NO_RECORDS, MSG_NO_DATA, SECTION_NET_BALANCES, SECTION_SETTLEMENT_PLAN,
+    MSG_ADD_EXPENSES, MSG_SETTLED_UP, LABEL_PAID, LABEL_TO_PREFIX, LABEL_HIMSELF,
+    LABEL_PAY_TO, LABEL_FOR
+} from '@constants';
 
 interface HistoryReportsProps {
     theme: ThemeConfig;
@@ -37,7 +43,7 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
             {/* Tabs Header */}
             <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-white/5 backdrop-blur-md">
                 <h3 className={`font-bold ${theme.textMuted} uppercase tracking-wider text-sm`}>
-                    {activeTab === 'expenses' ? 'Activity' : 'Settlement'}
+                    {activeTab === 'expenses' ? SECTION_ACTIVITY : SECTION_SETTLEMENT}
                 </h3>
                 <div className={`flex p-1 rounded-lg ${theme.input}`}>
                     {(['expenses', 'report'] as const).map(tab => (
@@ -46,7 +52,7 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                             onClick={() => setActiveTab(tab)}
                             className={`px-4 py-1.5 text-xs font-bold rounded-md transition-all ${activeTab === tab ? `${theme.buttonPrimary}` : `hover:text-white ${theme.textMuted}`}`}
                         >
-                            {tab === 'expenses' ? 'History' : 'Plan'}
+                            {tab === 'expenses' ? BTN_HISTORY : BTN_PLAN}
                         </button>
                     ))}
                 </div>
@@ -58,7 +64,7 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                     expenses.length === 0 ? (
                         <div className={`flex flex-col items-center justify-center h-full ${theme.textMuted} opacity-50`}>
                             <Receipt className="w-12 h-12 mb-4 opacity-50" />
-                            <p>No records yet.</p>
+                            <p>{MSG_NO_RECORDS}</p>
                         </div>
                     ) : (
                         <div className="space-y-3">
@@ -67,10 +73,10 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                                     <div>
                                         <div className="font-bold">{ex.description}</div>
                                         <div className={`text-xs ${theme.textMuted} mt-1`}>
-                                            <span className={theme.accent}>{ex.payer}</span> paid <span className="font-mono font-bold">{currency}{ex.amount.toFixed(2)}</span>
+                                            <span className={theme.accent}>{ex.payer}</span>{LABEL_PAID}<span className="font-mono font-bold">{currency}{ex.amount.toFixed(2)}</span>
                                         </div>
                                         <div className={`text-[10px] uppercase font-bold mt-1 opacity-60`}>
-                                            To: {ex.payer === ex.orderedBy ? 'Himself' : ex.orderedBy}
+                                            {LABEL_TO_PREFIX}{ex.payer === ex.orderedBy ? LABEL_HIMSELF : ex.orderedBy}
                                         </div>
                                     </div>
                                     <button onClick={() => deleteExpense(ex.id)} className={`p-2 rounded-lg opacity-0 group-hover:opacity-100 hover:bg-white/10 ${theme.danger} transition-all`}>
@@ -88,7 +94,7 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                         <div className={`p-4 rounded-2xl ${theme.input} animate-slide`}>
                             <div className="flex items-center gap-2 mb-4 opacity-70">
                                 <Wallet className="w-4 h-4" />
-                                <h4 className="font-bold uppercase text-xs">Net Balances</h4>
+                                <h4 className="font-bold uppercase text-xs">{SECTION_NET_BALANCES}</h4>
                             </div>
                             <div className="space-y-2">
                                 {people.map(p => {
@@ -104,7 +110,7 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                                         </div>
                                     )
                                 })}
-                                {people.length === 0 && <div className={`text-center py-2 ${theme.textMuted}`}>No data</div>}
+                                {people.length === 0 && <div className={`text-center py-2 ${theme.textMuted}`}>{MSG_NO_DATA}</div>}
                             </div>
                         </div>
 
@@ -112,17 +118,17 @@ export const HistoryReports: React.FC<HistoryReportsProps> = ({
                         <div className="animate-slide" style={{ animationDelay: '0.1s' }}>
                             <div className="flex items-center gap-2 mb-4 opacity-70 px-2">
                                 <Activity className="w-4 h-4" />
-                                <h4 className="font-bold uppercase text-xs">Settlement Plan</h4>
+                                <h4 className="font-bold uppercase text-xs">{SECTION_SETTLEMENT_PLAN}</h4>
                             </div>
 
                             {settlements.length === 0 ? (
                                 <div className={`py-8 text-center rounded-2xl border border-dashed border-white/10 ${theme.textMuted}`}>
-                                    <p>{expenses.length === 0 ? "Add expenses" : "Settled up!"}</p>
+                                    <p>{expenses.length === 0 ? MSG_ADD_EXPENSES : MSG_SETTLED_UP}</p>
                                 </div>
                             ) : (
                                 <div className="space-y-3">
                                     {settlements.map((item, i) => {
-                                        const txt = `${item.from} pay to ${item.to} for ${currency}${item.amount.toFixed(2)}`;
+                                        const txt = `${item.from}${LABEL_PAY_TO}${item.to}${LABEL_FOR}${currency}${item.amount.toFixed(2)}`;
                                         return (
                                             <div key={i} className={`relative p-4 rounded-xl flex items-center justify-between ${theme.input} border ${theme.border} group`}>
                                                 <div className="flex items-center gap-3 overflow-hidden">

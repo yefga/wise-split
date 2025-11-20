@@ -1,8 +1,8 @@
 import React from 'react';
 import { RotateCcw } from 'lucide-react';
 import { ThemeConfig } from '@app-types';
-// Ensure these are imported correctly based on your folder structure
 import { ThemeToggle, GlassButton } from '@components';
+import { COPYRIGHT_TEXT } from '@constants';
 
 interface FooterProps {
     isDark: boolean;
@@ -17,7 +17,7 @@ export const Footer: React.FC<FooterProps> = ({ isDark, theme, toggleTheme, hand
 
             <div className="md:col-span-5">
                 <p className={`text-xs font-medium opacity-50 ${isDark ? 'text-white' : 'text-slate-600'} mix-blend-difference transition-colors duration-500`}>
-                    &copy; {new Date().getFullYear()} SmartSplit. Created by Yefga.
+                    {COPYRIGHT_TEXT}
                 </p>
             </div>
 

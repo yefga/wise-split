@@ -1,10 +1,11 @@
-import type { Currency } from '@app-types';
+import { Currency } from '@app-types';
 
 export const CURRENCIES: Currency[] = [
-    { label: 'USD', symbol: '$' },
-    { label: 'EUR', symbol: '€' },
-    { label: 'GBP', symbol: '£' },
-    { label: 'IDR', symbol: 'Rp' },
-    { label: 'JPY', symbol: '¥' },
-    { label: 'KRW', symbol: '₩' },
+    { label: 'US Dollar', symbol: '$' },
+    { label: 'Euro', symbol: '€' },
+    { label: 'British Pound', symbol: '£' },
+    { label: 'Japanese Yen', symbol: '¥' },
+    { label: 'Thai Baht', symbol: '฿' },
 ];
+
+export * from './ui';
