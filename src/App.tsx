@@ -1,12 +1,10 @@
-import React, { useState, useMemo, useRef, useEffect, FormEvent } from 'react';
-import { RotateCcw } from 'lucide-react';
+import React, { useState, useMemo, FormEvent } from 'react';
 import { useAppStore } from '@store';
 import { ThemeConfig, PersonSummary, Settlement, Currency, Expense } from '@app-types';
-import { GlassButton, Background, ThemeToggle, PeopleSection, AddExpense, Header, Footer, HistoryReports } from '@components';
+// Removed ThemeToggle, GlassButton from imports here as they are now in Footer (unless used elsewhere)
+import { Background, PeopleSection, AddExpense, Header, Footer, HistoryReports } from '@components';
 import { CURRENCIES } from '@constants';
 import { getTheme } from '@utils';
-
-// --- Main App Component ---
 
 export default function App() {
   // --- Store Hooks ---
@@ -19,7 +17,7 @@ export default function App() {
     resetApp: resetStore
   } = useAppStore();
 
-  // --- Local Form State (Transient) ---
+  // --- Local Form State ---
   const [personName, setPersonName] = useState<string>('');
   const [nameError, setNameError] = useState<string>('');
 
@@ -30,37 +28,13 @@ export default function App() {
 
   const [copiedId, setCopiedId] = useState<number | null>(null);
 
-  // --- Layout Refs for Equal Height ---
-  const leftCardRef = useRef<HTMLDivElement>(null);
-  const [rightCardHeight, setRightCardHeight] = useState<number | 'auto'>('auto');
-
-  useEffect(() => {
-    const syncHeight = () => {
-      if (leftCardRef.current) {
-        setRightCardHeight(leftCardRef.current.offsetHeight);
-      }
-    };
-    syncHeight();
-
-    const resizeObserver = new ResizeObserver(() => syncHeight());
-    if (leftCardRef.current) resizeObserver.observe(leftCardRef.current);
-
-    window.addEventListener('resize', syncHeight);
-    return () => {
-      resizeObserver.disconnect();
-      window.removeEventListener('resize', syncHeight);
-    };
-  }, [people.length, expenses.length]); // Trigger on data changes
-
-  // --- Glassmorphism Theme Configuration ---
-  // --- Glassmorphism Theme Configuration ---
+  // --- Theme ---
   const theme: ThemeConfig = getTheme(isDark);
 
   // --- Handlers ---
   const handleReset = () => {
     if (window.confirm('Reset everything?')) {
       resetStore();
-      // Reset local form state
       setPersonName('');
       setDescription('');
       setAmount('');
@@ -99,7 +73,6 @@ export default function App() {
 
   const handleRemovePerson = (name: string) => {
     removePersonFromStore(name);
-    // Clear local selection if that person was selected
     if (payer === name) setPayer('');
     if (orderedBy === name) setOrderedBy('');
   };
@@ -124,8 +97,6 @@ export default function App() {
     };
 
     addExpenseToStore(newExpense);
-
-    // Reset Form
     setDescription('');
     setAmount('');
     setPayer('');
@@ -182,18 +153,15 @@ export default function App() {
   }, [expenses, people]);
 
   const totalSpent = expenses.reduce((sum, item) => sum + item.amount, 0);
-
   const currencies: Currency[] = CURRENCIES;
 
   return (
-    <div className={`min-h-screen font-grotesk transition-colors duration-500 ${theme.appBg} text-sm md:text-base relative overflow-x-hidden pb-20 md:pb-10`}>
+    <div className={`min-h-screen font-grotesk transition-colors duration-500 ${theme.appBg} text-sm md:text-base relative overflow-x-hidden pb-10`}>
 
       <Background isDark={isDark} />
 
-      {/* Main Content */}
-      <div className="relative z-10">
+      <div className="relative z-10 min-h-screen flex flex-col md:justify-center py-8 md:py-0">
 
-        {/* Header */}
         <Header
           theme={theme}
           currency={currency}
@@ -202,71 +170,63 @@ export default function App() {
           totalSpent={totalSpent}
         />
 
-        <main className="max-w-5xl mx-auto px-4 space-y-8">
+        <main className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mb-4">
 
-          {/* People Section */}
-          <PeopleSection
-            theme={theme}
-            people={people}
-            personName={personName}
-            nameError={nameError}
-            setPersonName={setPersonName}
-            setNameError={setNameError}
-            handleAddPerson={handleAddPerson}
-            handleRemovePerson={handleRemovePerson}
-          />
+          {/* Left Column */}
+          <div className="md:col-span-5 flex flex-col gap-8">
+            <PeopleSection
+              theme={theme}
+              people={people}
+              personName={personName}
+              nameError={nameError}
+              setPersonName={setPersonName}
+              setNameError={setNameError}
+              handleAddPerson={handleAddPerson}
+              handleRemovePerson={handleRemovePerson}
+            />
+            <AddExpense
+              theme={theme}
+              people={people}
+              currency={currency}
+              description={description}
+              setDescription={setDescription}
+              amount={amount}
+              setAmount={setAmount}
+              payer={payer}
+              setPayer={setPayer}
+              orderedBy={orderedBy}
+              setOrderedBy={setOrderedBy}
+              handleAddExpense={handleAddExpense}
+            />
+          </div>
 
-          {/* Main Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-8">
-
-            {/* Add Expense */}
-            <div className="md:col-span-5">
-              <AddExpense
-                theme={theme}
-                people={people}
-                currency={currency}
-                description={description}
-                setDescription={setDescription}
-                amount={amount}
-                setAmount={setAmount}
-                payer={payer}
-                setPayer={setPayer}
-                orderedBy={orderedBy}
-                setOrderedBy={setOrderedBy}
-                handleAddExpense={handleAddExpense}
-                cardRef={leftCardRef}
-              />
-            </div>
-
-            {/* History & Reports */}
-            <div className="md:col-span-7">
-              <HistoryReports
-                theme={theme}
-                activeTab={activeTab}
-                setActiveTab={setActiveTab}
-                expenses={expenses}
-                currency={currency}
-                deleteExpense={deleteExpense}
-                people={people}
-                personSummary={personSummary}
-                settlements={settlements}
-                handleCopy={handleCopy}
-                copiedId={copiedId}
-                cardStyle={{ height: rightCardHeight }}
-              />
-            </div>
+          {/* Right Column */}
+          <div className="md:col-span-7 flex flex-col h-full">
+            <HistoryReports
+              theme={theme}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+              expenses={expenses}
+              currency={currency}
+              deleteExpense={deleteExpense}
+              people={people}
+              personSummary={personSummary}
+              settlements={settlements}
+              handleCopy={handleCopy}
+              copiedId={copiedId}
+              cardStyle={{ height: '100%' }}
+            />
           </div>
         </main>
 
-        {/* Fixed Bottom Elements */}
-        <Footer isDark={isDark} />
+        {/* New Footer with Controls */}
+        <Footer
+          isDark={isDark}
+          theme={theme}
+          toggleTheme={toggleTheme}
+          handleReset={handleReset}
+        />
 
-        <div className="fixed bottom-4 right-4 flex gap-3 z-50">
-          <ThemeToggle theme={theme} isDark={isDark} toggleTheme={toggleTheme} />
-          <GlassButton theme={theme} onClick={handleReset} className="!p-3 !rounded-full shadow-lg backdrop-blur-xl bg-black/40 border-white/20 text-rose-400">
-            <RotateCcw className="w-5 h-5" />
-          </GlassButton>
-        </div>
       </div>
     </div>
   );

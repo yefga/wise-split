@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 import { Expense } from '@app-types';
 
 interface AppState {
@@ -22,45 +23,59 @@ interface AppState {
     resetApp: () => void;
 }
 
-export const useAppStore = create<AppState>((set, get) => ({
-    isDark: true,
-    toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
+export const useAppStore = create<AppState>()(
+    persist(
+        (set, get) => ({
+            isDark: true,
+            toggleTheme: () => set((state) => ({ isDark: !state.isDark })),
 
-    people: [],
-    expenses: [],
-    currency: '$',
-    activeTab: 'expenses',
-
-    setCurrency: (currency) => set({ currency }),
-    setActiveTab: (activeTab) => set({ activeTab }),
-
-    addPerson: (name) => {
-        const { people } = get();
-        // Duplicate check
-        if (people.some((p) => p.toLowerCase() === name.toLowerCase())) {
-            return false;
-        }
-        set({ people: [...people, name] });
-        return true;
-    },
-
-    removePerson: (name) =>
-        set((state) => ({
-            people: state.people.filter((p) => p !== name),
-            // Optional: We could cascade delete expenses involving this person here if desired
-        })),
-
-    addExpense: (expense) =>
-        set((state) => ({ expenses: [expense, ...state.expenses] })),
-
-    deleteExpense: (id) =>
-        set((state) => ({ expenses: state.expenses.filter((e) => e.id !== id) })),
-
-    resetApp: () =>
-        set({
             people: [],
             expenses: [],
+            currency: '$',
             activeTab: 'expenses',
-            // We keep theme and currency as they are user preferences usually
+
+            setCurrency: (currency) => set({ currency }),
+            setActiveTab: (activeTab) => set({ activeTab }),
+
+            addPerson: (name) => {
+                const { people } = get();
+                // Duplicate check
+                if (people.some((p) => p.toLowerCase() === name.toLowerCase())) {
+                    return false;
+                }
+                set({ people: [...people, name] });
+                return true;
+            },
+
+            removePerson: (name) =>
+                set((state) => ({
+                    people: state.people.filter((p) => p !== name),
+                    // Optional: We could cascade delete expenses involving this person here if desired
+                })),
+
+            addExpense: (expense) =>
+                set((state) => ({ expenses: [expense, ...state.expenses] })),
+
+            deleteExpense: (id) =>
+                set((state) => ({ expenses: state.expenses.filter((e) => e.id !== id) })),
+
+            resetApp: () =>
+                set({
+                    people: [],
+                    expenses: [],
+                    activeTab: 'expenses',
+                    // We keep theme and currency as they are user preferences usually
+                }),
         }),
-}));
+        {
+            name: 'smart-split-storage',
+            partialize: (state) => ({
+                isDark: state.isDark,
+                people: state.people,
+                expenses: state.expenses,
+                currency: state.currency,
+                activeTab: state.activeTab
+            })
+        }
+    )
+);

@@ -19,7 +19,7 @@ export const Header: React.FC<HeaderProps> = ({
     totalSpent
 }) => {
     return (
-        <div className="px-6 py-6 mb-8 sticky top-0 z-50">
+        <div className="px-6 py-6 sticky top-0 z-50">
             <GlassCard theme={theme} className="max-w-5xl mx-auto !py-4 !px-6 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 !rounded-full backdrop-blur-2xl">
                 <h1 className={`text-xl font-bold flex items-center gap-3 ${theme.textHighlight} tracking-wide`}>
                     <div className={`p-2 rounded-full ${theme.input} border ${theme.border}`}>
