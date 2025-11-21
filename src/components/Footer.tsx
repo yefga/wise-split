@@ -30,7 +30,7 @@ export const Footer: React.FC<FooterProps> = ({ isDark, theme, toggleTheme, onRe
 
     return (
         <>
-            <footer className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mt-3 items-center relative z-20">
+            <footer className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mt-3 items-center relative z-20 px-5 lg:px-0">
 
                 <div className="md:col-span-5">
                     <a href="https://github.com/yefga/wise-split" target="_blank" rel="noopener noreferrer">
