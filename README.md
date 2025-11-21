@@ -1,3 +1,3 @@
-# SplitWise
+# wise-split
 
-demo: https://split-wise-e0333.web.app
+demo: https://wise-split-8cb2c.web.app
