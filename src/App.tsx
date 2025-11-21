@@ -56,7 +56,7 @@ export default function App() {
             hasExpenses={expenses.length > 0}
           />
 
-          <main className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mb-4">
+          <main className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-8 w-full mb-4 px-5 sm:px-0">
             <div className="md:col-span-5 flex flex-col gap-8">
               <PeopleSection
                 theme={theme}

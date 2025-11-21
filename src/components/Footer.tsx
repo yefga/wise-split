@@ -34,13 +34,13 @@ export const Footer: React.FC<FooterProps> = ({ isDark, theme, toggleTheme, onRe
 
                 <div className="md:col-span-5">
                     <a href="https://github.com/yefga/split-wise" target="_blank" rel="noopener noreferrer">
-                        <p className={`text-xs font-medium opacity-50 ${isDark ? 'text-white' : 'text-slate-600'} mix-blend-difference transition-colors duration-500`}>
+                        <p className={`text-xs font-medium opacity-50 ${isDark ? 'text-white' : 'text-slate-600'} mix-blend-difference transition-colors duration-500 text-center md:text-left`}>
                             {COPYRIGHT_TEXT}
                         </p>
                     </a>
                 </div>
 
-                <div className="md:col-span-7 flex justify-end gap-3">
+                <div className="md:col-span-7 flex justify-center md:justify-end gap-3">
                     <ThemeToggle theme={theme} isDark={isDark} toggleTheme={toggleTheme} />
 
                     <GlassButton

@@ -10,3 +10,5 @@ export { Header } from './Header';
 export { Footer } from './Footer';
 export { HistoryReports } from './HistoryReports';
 export { ConfirmModal } from './ConfirmModal';
+export { CurrencySelector } from './CurrencySelector';
+export { TotalDisplay } from './TotalDisplay';
